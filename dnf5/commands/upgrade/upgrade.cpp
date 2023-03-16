@@ -132,4 +132,13 @@ void UpgradeCommand::run() {
     }
 }
 
+void UpgradeCommand::goal_resolved() {
+    auto & transaction = *get_context().get_transaction();
+    if (transaction.get_problems() != libdnf::GoalProblem::NO_PROBLEM) {
+        if (transaction.empty()) {
+            throw libdnf::cli::GoalResolveError(transaction);
+        }
+    }
+}
+
 }  // namespace dnf5

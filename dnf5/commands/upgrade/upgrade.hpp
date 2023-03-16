@@ -38,6 +38,7 @@ public:
     void set_argument_parser() override;
     void configure() override;
     void run() override;
+    void goal_resolved() override;
 
 protected:
     libdnf::OptionBool * minimal{nullptr};
