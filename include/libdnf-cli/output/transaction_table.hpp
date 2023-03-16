@@ -310,10 +310,8 @@ bool print_transaction_table(Transaction & transaction) {
 
     // TODO (nsella) split function into create/print if possible
     //static struct libscols_table * create_transaction_table(bool with_status) {}
-    auto tspkgs = transaction.get_transaction_packages();
-    auto tsgrps = transaction.get_transaction_groups();
 
-    if (tspkgs.empty() && tsgrps.empty()) {
+    if (transaction.empty()) {
         std::cout << "Nothing to do." << std::endl;
         return false;
     }
@@ -354,6 +352,8 @@ bool print_transaction_table(Transaction & transaction) {
     // TODO(dmach): consider reordering so the major changes (installs, obsoletes, removals) are at the bottom next to the confirmation question
     // TODO(jrohel): Print relations with obsoleted packages
 
+    auto tspkgs = transaction.get_transaction_packages();
+    auto tsgrps = transaction.get_transaction_groups();
     std::sort(tspkgs.begin(), tspkgs.end(), transaction_package_cmp<decltype(*tspkgs.begin())>);
     std::sort(tsgrps.begin(), tsgrps.end(), transaction_group_cmp<decltype(*tsgrps.begin())>);
 

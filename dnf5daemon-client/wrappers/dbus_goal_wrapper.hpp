@@ -35,6 +35,7 @@ class DbusGoalWrapper {
 public:
     DbusGoalWrapper(std::vector<dnfdaemon::DbusTransactionItem>);
 
+    bool empty() const { return transaction_packages.empty() && transaction_groups.empty(); }
     std::vector<DbusTransactionPackageWrapper> get_transaction_packages() const { return transaction_packages; };
     std::vector<DbusTransactionGroupWrapper> get_transaction_groups() const { return transaction_groups; };
     std::vector<std::string> get_resolve_logs_as_strings() const { return resolve_logs; }

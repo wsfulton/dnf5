@@ -75,6 +75,9 @@ public:
     /// @return A vector of string representations of problems.
     std::vector<std::string> get_resolve_logs_as_strings() const;
 
+    /// @return True if transaction does not contain any package or group
+    bool empty() const;
+
     /// @return the transaction packages.
     // TODO(jrohel): Return reference instead of copy?
     std::vector<libdnf::base::TransactionPackage> get_transaction_packages() const;

@@ -98,6 +98,10 @@ GoalProblem Transaction::get_problems() {
     return p_impl->problems;
 }
 
+bool Transaction::empty() const {
+    return p_impl->packages.empty() && p_impl->groups.empty();
+}
+
 std::vector<TransactionPackage> Transaction::get_transaction_packages() const {
     return p_impl->packages;
 }
