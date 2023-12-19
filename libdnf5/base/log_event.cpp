@@ -112,6 +112,8 @@ std::string LogEvent::to_string(
             return ret.append(utils::sformat(_("Argument '{}' matches only source packages."), *spec));
         case GoalProblem::EXCLUDED:
             return ret.append(utils::sformat(_("Argument '{}' matches only excluded packages."), *spec));
+        case GoalProblem::EXCLUDED_VERSIONLOCK:
+            return ret.append(utils::sformat(_("Argument '{}' matches only packages excluded by versionlock."), *spec));
         case GoalProblem::HINT_ICASE:
             return ret.append(utils::sformat(_("  * Maybe you meant: {}"), *spec));
         case GoalProblem::HINT_ALTERNATIVES: {
