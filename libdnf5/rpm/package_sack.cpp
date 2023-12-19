@@ -191,6 +191,20 @@ void PackageSack::Impl::load_config_excludes_includes(bool only_main) {
         config_excludes.reset(new libdnf5::solv::SolvMap(0));
         *config_excludes = *excludes.p_impl;
     }
+
+    {
+        // XXX fill versionlock excludes. Maybe it should be handled by the plugin.
+        PackageSet versionlock_excludes(base);
+        PackageQuery query(base, PackageQuery::ExcludeFlags::IGNORE_EXCLUDES);
+        query.filter_available();
+        query.filter_name({"acpi"});
+        for (const auto & pkg : query) {
+            if (pkg.get_evr() != "1.7-11.fc30") {
+                versionlock_excludes.add(pkg);
+            }
+        }
+        set_versionlock_excludes(versionlock_excludes);
+    }
 }
 
 const PackageSet PackageSack::Impl::get_user_excludes() {
