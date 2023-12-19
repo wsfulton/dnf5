@@ -505,7 +505,11 @@ GoalProblem Goal::Impl::add_specs_to_goal(base::Transaction & transaction) {
                 break;
             case GoalAction::UPGRADE_ALL:
             case GoalAction::UPGRADE_ALL_MINIMAL: {
-                rpm::PackageQuery query(base);
+                // XXX apply versionlocks
+                rpm::PackageQuery query(
+                    base,
+                    rpm::PackageQuery::ExcludeFlags::APPLY_EXCLUDES |
+                        rpm::PackageQuery::ExcludeFlags::APPLY_VERSIONLOCK);
 
                 // Apply advisory filters
                 if (settings.advisory_filter.has_value()) {
@@ -526,7 +530,11 @@ GoalProblem Goal::Impl::add_specs_to_goal(base::Transaction & transaction) {
                     upgrade_ids, settings.resolve_best(cfg_main), settings.resolve_clean_requirements_on_remove());
             } break;
             case GoalAction::DISTRO_SYNC_ALL: {
-                rpm::PackageQuery query(base);
+                // XXX apply versionlocks
+                rpm::PackageQuery query(
+                    base,
+                    rpm::PackageQuery::ExcludeFlags::APPLY_EXCLUDES |
+                        rpm::PackageQuery::ExcludeFlags::APPLY_VERSIONLOCK);
                 libdnf5::solv::IdQueue upgrade_ids;
                 for (auto package_id : *query.p_impl) {
                     upgrade_ids.push_back(package_id);
@@ -865,7 +873,9 @@ std::pair<GoalProblem, libdnf5::solv::IdQueue> Goal::Impl::add_install_to_goal(
 
     auto multilib_policy = cfg_main.get_multilib_policy_option().get_value();
     libdnf5::solv::IdQueue result_queue;
-    rpm::PackageQuery base_query(base);
+    // XXX apply versionlock
+    rpm::PackageQuery base_query(
+        base, rpm::PackageQuery::ExcludeFlags::APPLY_EXCLUDES | rpm::PackageQuery::ExcludeFlags::APPLY_VERSIONLOCK);
 
     rpm::PackageQuery query(base_query);
     auto nevra_pair = query.resolve_pkg_spec(spec, settings, false);
@@ -1119,7 +1129,9 @@ GoalProblem Goal::Impl::add_reinstall_to_goal(
     bool best = settings.resolve_best(cfg_main);
     bool clean_requirements_on_remove = settings.resolve_clean_requirements_on_remove();
     auto sack = base->get_rpm_package_sack();
-    rpm::PackageQuery query(base);
+    // XXX apply versionlocks
+    rpm::PackageQuery query(
+        base, rpm::PackageQuery::ExcludeFlags::APPLY_EXCLUDES | rpm::PackageQuery::ExcludeFlags::APPLY_VERSIONLOCK);
     auto nevra_pair = query.resolve_pkg_spec(spec, settings, false);
     if (!nevra_pair.first) {
         auto problem = transaction.p_impl->report_not_found(GoalAction::REINSTALL, spec, settings, log_level);
@@ -1502,7 +1514,9 @@ GoalProblem Goal::Impl::add_up_down_distrosync_to_goal(
     bool skip_unavailable = settings.resolve_skip_unavailable(base->get_config());
 
     auto sack = base->get_rpm_package_sack();
-    rpm::PackageQuery base_query(base);
+    // XXX apply versionlocks
+    rpm::PackageQuery base_query(
+        base, rpm::PackageQuery::ExcludeFlags::APPLY_EXCLUDES | rpm::PackageQuery::ExcludeFlags::APPLY_VERSIONLOCK);
     auto obsoletes = base->get_config().get_obsoletes_option().get_value();
     libdnf5::solv::IdQueue tmp_queue;
     rpm::PackageQuery query(base_query);
@@ -1511,6 +1525,7 @@ GoalProblem Goal::Impl::add_up_down_distrosync_to_goal(
         auto problem = transaction.p_impl->report_not_found(action, spec, settings, libdnf5::Logger::Level::WARNING);
         return skip_unavailable ? GoalProblem::NO_PROBLEM : problem;
     }
+
     // Report when package is not installed
     rpm::PackageQuery all_installed(base, rpm::PackageQuery::ExcludeFlags::IGNORE_EXCLUDES);
     all_installed.filter_installed();
