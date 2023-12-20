@@ -2308,7 +2308,6 @@ base::Transaction Goal::resolve() {
 
     auto sack = p_impl->base->get_rpm_package_sack();
 
-    sack->p_impl->recompute_considered_in_pool();
     sack->p_impl->make_provides_ready();
 
 
@@ -2387,6 +2386,9 @@ base::Transaction Goal::resolve() {
         }
     }
 
+    // XXX
+    sack->p_impl->recompute_considered_in_pool(
+        libdnf5::sack::ExcludeFlags::APPLY_EXCLUDES | libdnf5::sack::ExcludeFlags::APPLY_VERSIONLOCK);
     ret |= p_impl->rpm_goal.resolve();
 
     // Write debug solver data

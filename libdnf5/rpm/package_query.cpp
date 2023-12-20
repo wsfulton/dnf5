@@ -408,6 +408,7 @@ PackageQuery::PackageQuery(const BaseWeakPtr & base, ExcludeFlags flags, bool em
     auto & pool = get_rpm_pool(base);
     switch (flags) {
         case ExcludeFlags::APPLY_EXCLUDES:
+            // XXX now it's different
             // Considered map in Pool uses APPLY_EXCLUDES. It can be used in this case.
             base->get_rpm_package_sack()->p_impl->recompute_considered_in_pool();
             if (!empty && pool.is_considered_map_active()) {

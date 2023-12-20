@@ -425,12 +425,12 @@ std::optional<libdnf5::solv::SolvMap> PackageSack::Impl::compute_considered_map(
     return considered;
 }
 
-void PackageSack::Impl::recompute_considered_in_pool() {
-    if (considered_uptodate) {
+void PackageSack::Impl::recompute_considered_in_pool(libdnf5::sack::ExcludeFlags flags) {
+    if (considered_uptodate && considered_flags && *considered_flags == flags) {
         return;
     }
 
-    auto considered = compute_considered_map(libdnf5::sack::ExcludeFlags::APPLY_EXCLUDES);
+    auto considered = compute_considered_map(flags);
     if (considered) {
         get_rpm_pool(base).swap_considered_map(*considered);
     } else {
@@ -438,6 +438,13 @@ void PackageSack::Impl::recompute_considered_in_pool() {
         get_rpm_pool(base).swap_considered_map(empty_map);
     }
 
+    considered_uptodate = true;
+    considered_flags = flags;
+}
+
+
+void PackageSack::Impl::swap_considered_in_pool(libdnf5::solv::SolvMap & other_considered_map) {
+    get_rpm_pool(base).swap_considered_map(other_considered_map);
     considered_uptodate = true;
 }
 

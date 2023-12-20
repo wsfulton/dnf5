@@ -121,7 +121,8 @@ public:
 
     /// If the considered map in the pool is out of date - `considered_uptodate == false` - it will recompute it.
     /// And sets `considered_uptodate` to` true`.
-    void recompute_considered_in_pool();
+    void recompute_considered_in_pool(libdnf5::sack::ExcludeFlags flags = libdnf5::sack::ExcludeFlags::APPLY_EXCLUDES);
+    void swap_considered_in_pool(libdnf5::solv::SolvMap & other_considered_map);
 
 private:
     bool provides_ready{false};
@@ -147,6 +148,7 @@ private:
     std::unique_ptr<libdnf5::solv::SolvMap> versionlock_excludes;  // packages excluded by versionlock
 
     bool considered_uptodate = true;
+    std::optional<libdnf5::sack::ExcludeFlags> considered_flags;
 
     std::vector<Solvable *> cached_sorted_solvables;
     int cached_sorted_solvables_size{0};
